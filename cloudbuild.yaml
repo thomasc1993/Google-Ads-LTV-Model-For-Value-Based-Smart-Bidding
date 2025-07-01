@@ -1,0 +1,56 @@
+# Cloud Build pipeline: builds container, deploys Cloud Run + Cloud Function
+substitutions:
+  _REGION: us-central1
+  _REPO: us-central1-docker.pkg.dev/$PROJECT_ID/smart-bidding-engine
+
+steps:
+# ────────────────────────────────
+# 1. Build & push training image
+# ────────────────────────────────
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build-Image'
+  args: ['build', '-t', '${_REPO}:latest', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push-Image'
+  args: ['push', '${_REPO}:latest']
+
+# ────────────────────────────────
+# 2. Deploy Cloud Run (ltv-engine)
+# ────────────────────────────────
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploy-CloudRun'
+  args:
+  - 'run'
+  - 'deploy'
+  - 'ltv-engine'
+  - '--image=${_REPO}:latest'
+  - '--region=${_REGION}'
+  - '--platform=managed'
+  - '--allow-unauthenticated'
+  - '--memory=2Gi'
+  - '--timeout=900s'
+  - '--set-env-vars'
+  - 'BQ_DATASET=marketing_ml,BQ_TABLE=click_revenue,MODEL_BUCKET=ltv-models'
+
+# ────────────────────────────────
+# 3. Deploy Cloud Function (upload_ltv)
+# ────────────────────────────────
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Deploy-Function'
+  dir: '.'
+  args:
+  - 'functions'
+  - 'deploy'
+  - 'upload_ltv'
+  - '--gen2'
+  - '--region=${_REGION}'
+  - '--runtime=python311'
+  - '--entry-point=upload_ltv'
+  - '--source=.'
+  - '--trigger-http'
+  - '--memory=512Mi'
+  - '--timeout=540s'
+  - '--set-env-vars'
+  - 'CUSTOMER_ID=987654321,CONVERSION_ACTION_ID=123456789,BQ_PRED_TABLE=marketing_ml.ltv_predictions'
+timeout: 1200s
