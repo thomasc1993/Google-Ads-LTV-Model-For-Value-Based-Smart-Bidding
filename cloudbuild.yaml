@@ -31,7 +31,7 @@ steps:
   - '--memory=2Gi'
   - '--timeout=900s'
   - '--set-env-vars'
-  - 'BQ_DATASET=marketing_ml,BQ_TABLE=click_revenue,MODEL_BUCKET=ltv-models'
+  - 'BQ_DATASET=marketing_ml,CLICKS_TABLE=click_revenue,MODEL_BUCKET=ltv-models'
 
 # ────────────────────────────────
 # 3. Deploy Cloud Function (upload_ltv)
