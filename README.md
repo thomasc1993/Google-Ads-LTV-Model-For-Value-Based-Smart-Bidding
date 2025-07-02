@@ -1,4 +1,4 @@
-# Google Ads LTV Model For Value-Based Smart Bidding 
+# Google Ads LTV Machine Learning Model For Value-Based Smart Bidding 
 
 This repository contains a minimal example of training a customer lifetime value (LTV) model and uploading predictions to Google Ads for offline conversions to improve value-based Smart Bidding.
 
