@@ -1,6 +1,6 @@
 # Google Ads LTV Smart Bidding Automation
 
-This repository contains a minimal example of training a customer lifetime value (LTV) model and uploading predictions to Google Ads for Smart Bidding.
+This repository contains a minimal example of training a customer lifetime value (LTV) model and uploading predictions to Google Ads for offline conversions to improve value-based Smart Bidding.
 
 ## Project structure
 
